@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
 use std::cmp;
 
+// something is off with this one
 pub fn calc_p1() {
   if let Ok(file) = File::open("inputs/d3/input.txt") {
     let mut output = File::create("inputs/d3/out.txt").unwrap();
@@ -35,63 +36,71 @@ pub fn calc_p1() {
   }
 }
 
-// other idea: start processing character by character and keep track of the one line and one char length of characters if we find a digit we register a new number in a vector and keep processing until we find the end of the number. we have to keep track if the number ends on a line end bc then the number is complete and if the next line start with a digit it's a new number for segments are important: the characters before and after the number and the characters above and below the number plus one character each side of those. if we find a symbol in these segments we have to add the number to the sum. while processing we potentially need to track multiple numbers at the same time until we pass each number's critical segments we have to keep tracking it
-
 pub fn calc_p1_v2() {
-  if let Ok(file) = File::open("inputs/d3/test2.txt") {
-    let mut sum: i32 = 0;
-    let mut nums: Vec<i32> = Vec::new();
+  if let Ok(file) = File::open("inputs/d3/input.txt") {
     let reader: BufReader<File> = BufReader::new(file);
     let lines: Vec<String> = reader.lines().filter_map(Result::ok).collect();
-    let line_len = lines.get(0).unwrap_or(&String::new()).len();
-    let mut num_str = String::new();
-    for line in lines.iter() {
-      let mut prev_c = '.';
-      for c in line.chars() {
-        if c.is_numeric() {
-          if prev_c.is_numeric() {
 
-          } else {
-            match num_str.parse::<i32>() {
-              Ok(num) => {
-                println!("{}", num);
-                nums.push(num);
-              }
-              Err(_) => {}
-            }
-            num_str = String::new();
-            if !prev_c.eq(&'.') {
-              sum += nums.pop().unwrap_or(0);
-            }
+    let mut sum = 0;
+    let mut nums: Vec<(String, usize, usize)> = Vec::new();
+    let mut specials: Vec<(char, usize, usize)> = Vec::new();
+    let mut current_num = String::new();
+    let mut num_start_idx: usize = 0;
+    let mut num_line_idx: usize = 0;
+    let mut prev_char = '.';
+
+    for (line_idx, line) in lines.iter().enumerate() {
+      for (char_idx, c) in line.chars().enumerate() {
+        if c.is_numeric() {
+          if !prev_char.is_numeric() {
+            // Start of a new number
+            num_start_idx = char_idx;
+            num_line_idx = line_idx;
+            current_num.clear();
           }
-          num_str.push(c);
-          // println!("num_str: {}", num_str);
+          current_num.push(c);
         } else {
-          match num_str.parse::<i32>() {
-            Ok(num) => {
-              println!("{}", num);
-              nums.push(num);
-            }
-            Err(_) => {}
+          if !current_num.is_empty() {
+            // End of the current number, save it
+            nums.push((current_num.clone(), num_line_idx, num_start_idx));
+            current_num.clear();
           }
-          num_str = String::new();
-          if !c.eq(&'.') {
-            if prev_c.is_numeric() {
-              sum += nums.pop().unwrap_or(0);
-            }
+          if !c.is_alphanumeric() && c != '.' {
+            // Special character found
+            specials.push((c, line_idx, char_idx));
           }
         }
-        prev_c = c;
+        prev_char = c;
+      }
+
+      if !current_num.is_empty() {
+        // End of the line, save the current number if it's not empty
+        nums.push((current_num.clone(), num_line_idx, num_start_idx));
+        current_num.clear();
+      }
+
+      // Remove items if they are in a line before the previous line
+      nums.retain(|(_, num_line_idx, _)| {
+        *num_line_idx + 1 >= line_idx
+      });
+      specials.retain(|(_, num_line_idx, _)| {
+        *num_line_idx + 1 >= line_idx
+      });
+
+      // Check special chars if they are near a number, remove numbers that are summed
+      for (_spec, _spec_line_idx, spec_char_idx) in specials.iter() {
+        nums.retain(|(num, _num_line_idx, num_char_idx)| {
+          let mut keep = true;
+          if *num_char_idx <= spec_char_idx + 1 && *spec_char_idx <= num_char_idx + num.len() {
+            sum = sum + num.parse::<i32>().unwrap_or_default();
+            keep = false;
+          }
+          keep
+        });
       }
     }
-    match num_str.parse::<i32>() {
-      Ok(num) => {
-        println!("{}", num);
-        nums.push(num);
-      }
-      Err(_) => {}
-    }
-    println!("d03-p1: {}", sum);
+
+    println!("d03-p1 v2: {}", sum);
   } else {
     eprintln!("Error opening input");
   }
