@@ -1,6 +1,7 @@
 mod d01;
 mod d02;
 mod d03;
+mod d04;
 
 fn main() {
   if false {
@@ -10,6 +11,8 @@ fn main() {
     d02::calc_p2();
     d03::calc_p1();
     d03::calc_p1_v2();
+    d03::calc_p2();
   }
-  d03::calc_p2();
+  d04::calc_p1();
 }
+
