@@ -25,3 +25,29 @@ pub fn calc_p1() {
   }
 }
 
+pub fn calc_p2() {
+  if let Ok(file) = File::open("inputs/d4/input.txt") {
+    let mut sum: i32 = 0;
+    let reader: BufReader<File> = BufReader::new(file);
+    let lines: Vec<String> = reader.lines().filter_map(Result::ok).collect();
+    let mut cnts: Vec<i32> = vec![1; lines.len()];
+    for (idx, curr_line) in lines.iter().enumerate() {
+      println!("{}", curr_line);
+      let card: Vec<&str> = curr_line.split(": ").collect();
+      let cdata: Vec<&str> = card[1].split(" | ").collect();
+      let wns: Vec<i32> = cdata[0].split_whitespace().map(|s: &str| s.parse::<i32>().ok().unwrap()).collect();
+      let gns: Vec<i32> = cdata[1].split_whitespace().map(|s: &str| s.parse::<i32>().ok().unwrap()).collect();
+      let wgns: Vec<i32> = gns.into_iter().filter(|gn| wns.contains(&gn)).collect();
+      if wgns.len() > 0 {
+        for n in idx + 1..=idx + wgns.len() {
+          cnts[n] += cnts[idx];
+        }
+      }
+      sum += cnts[idx];
+    }
+    println!("d04-p2: {}", sum);
+  } else {
+    eprintln!("Error opening input");
+  }
+}
+

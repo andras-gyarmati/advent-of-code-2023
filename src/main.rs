@@ -12,7 +12,8 @@ fn main() {
     d03::calc_p1();
     d03::calc_p1_v2();
     d03::calc_p2();
+    d04::calc_p1();
   }
-  d04::calc_p1();
+  d04::calc_p2();
 }
 
