@@ -1,15 +1,14 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{self, BufRead, BufReader};
+use std::io::{self, BufRead};
+
+use crate::file_reader;
 
 pub fn calc_p1(file_name: &str) -> Result<i32, io::Error> {
   let cube_count: HashMap<&str, i32> = HashMap::from([("red", 12), ("green", 13), ("blue", 14)]);
-  let file = File::open(file_name)?;
-  let reader = BufReader::new(file);
   let mut sum: i32 = 0;
 
-  for line in reader.lines() {
-    let line = line?;
+  let lines = file_reader::read_lines_from_file(file_name)?;
+  for line in lines {
     let game: Vec<&str> = line.split(": ").collect();
     let name_str = *game.first().unwrap();
     let id = name_str.split(" ").last().unwrap_or("0").parse::<i32>().unwrap_or(0);
@@ -38,12 +37,10 @@ pub fn calc_p1(file_name: &str) -> Result<i32, io::Error> {
 
 pub fn calc_p2(file_name: &str) -> Result<i32, io::Error> {
   let unique_colors: Vec<&str> = vec!["red", "green", "blue"];
-  let file = File::open(file_name)?;
-  let reader = BufReader::new(file);
   let mut sum: i32 = 0;
 
-  for line in reader.lines() {
-    let line = line?;
+  let lines = file_reader::read_lines_from_file(file_name)?;
+  for line in lines {
     let game_split: Vec<&str> = line.split(": ").collect();
     let flattened_rolls: String = game_split.last().unwrap().replace("; ", ", ");
     let parsed_rolls: Vec<(i32, &str)> = flattened_rolls.split(", ").map(|roll| {

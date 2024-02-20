@@ -21,5 +21,9 @@ mod tests {
     (input_d02_p1, crate::d02::calc_p1, "inputs/d2/input.txt", 2545),
     (test_d02_p2, crate::d02::calc_p2, "inputs/d2/test.txt", 2286),
     (input_d02_p2, crate::d02::calc_p2, "inputs/d2/input.txt", 78111),
+    (test_d03_p1, crate::d03::calc_p1, "inputs/d3/test.txt", 4361),
+    (input_d03_p1, crate::d03::calc_p1, "inputs/d3/input.txt", 539590),
+    (test_d03_p2, crate::d03::calc_p2, "inputs/d3/test.txt", 467835), // todo debug
+    (input_d03_p2, crate::d03::calc_p2, "inputs/d3/input.txt", 80703636),
   }
 }
