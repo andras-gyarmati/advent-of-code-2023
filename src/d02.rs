@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::io::{self, BufRead};
+use std::io::{self};
 
 use crate::file_reader;
 

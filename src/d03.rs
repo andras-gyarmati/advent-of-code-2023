@@ -67,7 +67,7 @@ pub fn calc_p1(file_name: &str) -> Result<i32, io::Error> {
   Ok(sum)
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 struct Gear {
   gear_line_idx: usize,
   gear_char_idx: usize,
@@ -110,6 +110,8 @@ pub fn calc_p2(file_name: &str) -> Result<i32, io::Error> {
       prev_char = c;
     }
 
+    println!("gears: {:?}", gears);
+
     if !current_num.is_empty() {
       // End of the line, save the current number if it's not empty
       nums.push((current_num.clone(), num_line_idx, num_start_idx));
@@ -121,6 +123,7 @@ pub fn calc_p2(file_name: &str) -> Result<i32, io::Error> {
       *num_line_idx + 1 >= line_idx
     });
     gears.retain(|gear| {
+      println!("checked gear: {:?}\n", gear);
       let keep = gear.gear_line_idx + 1 >= line_idx;
       if !keep {
         // Sum the gears with two numbers
